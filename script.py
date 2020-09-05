@@ -16,7 +16,7 @@ def predict_mask(frame):
     predictions = tf.nn.sigmoid(predictions)
     prediction_probability = predictions[0]
     predictions = tf.where(predictions < 0.5, 0, 1)
-    return predictions[0] == 0, 1-prediction_probability
+    return predictions[0] == 0, 1 - prediction_probability
 
 
 classifier = cv2.CascadeClassifier("./haarcascade_frontalface_default.xml")
@@ -29,11 +29,13 @@ def detect(frame):
         mask_exist, probability = predict_mask(frame[y:y + h, x:x + w])
         if mask_exist:
             cv2.rectangle(frame, (x, y), (x + w, y + h), (36, 255, 12), 2)
-            cv2.putText(frame, f'Mask exist {probability}', (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (36, 255, 12),
+            cv2.putText(frame, f'Mask exist {round(probability.numpy() * 100, 2) }%', (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9,
+                        (36, 255, 12),
                         2)
         else:
             cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
-            cv2.putText(frame, f'No Mask exist {probability*100}%', (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (255, 0, 0),
+            cv2.putText(frame, f'No Mask exist {round((1 - probability.numpy()* 100), 3)}%', (x, y - 10),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.9, (255, 0, 0),
                         2)
     return frame
 
